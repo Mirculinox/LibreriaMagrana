@@ -15,11 +15,12 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
-    "./tokens": "./dist/tokens/index.css",
-    "./style.css": "./dist/style.css"
+    "./tokens": "./src/tokens/index.css",
+    "./style.css": "./src/tokens/index.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/tokens"
   ],
   "scripts": {
     "prepare": "vite build",
