@@ -1,4 +1,4 @@
-import { default as React } from 'react';
+import React from 'react';
 type BadgeColor = 'primary' | 'orange' | 'magenta' | 'emerald' | 'purple' | 'blue' | 'neutral';
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     color?: BadgeColor;

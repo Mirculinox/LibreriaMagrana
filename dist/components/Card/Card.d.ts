@@ -1,4 +1,4 @@
-import { default as React } from 'react';
+import React from 'react';
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     /** Aplicar efecto glassmorphism completo (backdrop-blur) */
     glass?: boolean;
