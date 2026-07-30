@@ -1,0 +1,85 @@
+/**
+ * @magrana/ui — Tokens de Diseño Unificados del Ecosistema Magrana Edu
+ *
+ * Cómo usar: importa este CSS en el entry point de tu app:
+ *   import '@magrana/ui/tokens';
+ *
+ * Todos los componentes de la librería los asumen definidos.
+ * Puedes sobreescribir cualquier variable en tu :root para personalizar.
+ */
+
+:root {
+  /* ═══════════════════════════════════════════
+     COLOR DE MARCA — Magrana Pomegranate Red
+  ═══════════════════════════════════════════ */
+  --magrana-primary:       #FB7185;   /* Rosa oscuro (modo oscuro) */
+  --magrana-primary-hover: #F43F5E;
+  --magrana-primary-light: #E11D48;   /* Rojo vivo (modo claro) */
+  --magrana-accent:        #F59E0B;   /* Amber — énfasis secundario */
+  --magrana-accent-hover:  #D97706;
+
+  /* ═══════════════════════════════════════════
+     PALETA "MÁGICA" — Categorías y estados
+  ═══════════════════════════════════════════ */
+  --magrana-orange:   #f97316;
+  --magrana-magenta:  #d946ef;
+  --magrana-emerald:  #10b981;
+  --magrana-purple:   #8b5cf6;
+  --magrana-blue:     #0ea5e9;
+
+  /* ═══════════════════════════════════════════
+     SEMÁNTICOS — Estado
+  ═══════════════════════════════════════════ */
+  --magrana-success: #10B981;
+  --magrana-error:   #EF4444;
+  --magrana-warning: #F59E0B;
+
+  /* ═══════════════════════════════════════════
+     FONDOS Y SUPERFICIES (Modo Oscuro por defecto)
+  ═══════════════════════════════════════════ */
+  --magrana-bg:           #000000;
+  --magrana-surface:      #0A0A0A;
+  --magrana-card:         #141414;
+  --magrana-card-hover:   #1F1F23;
+  --magrana-glass-bg:     rgba(40, 40, 40, 0.75);
+  --magrana-glass-border: rgba(255, 255, 255, 0.08);
+
+  /* ═══════════════════════════════════════════
+     TIPOGRAFÍA
+  ═══════════════════════════════════════════ */
+  --magrana-text:      #F8FAFC;
+  --magrana-text-muted: #A1A1AA;
+  --magrana-font:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  /* ═══════════════════════════════════════════
+     BORDES Y RADIOS
+  ═══════════════════════════════════════════ */
+  --magrana-radius-sm: 8px;
+  --magrana-radius-md: 12px;
+  --magrana-radius-lg: 20px;
+  --magrana-radius-xl: 30px;
+
+  /* ═══════════════════════════════════════════
+     SOMBRAS
+  ═══════════════════════════════════════════ */
+  --magrana-shadow-glow: 0 0 20px rgba(251, 113, 133, 0.3);
+  --magrana-shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+  /* ═══════════════════════════════════════════
+     TRANSICIONES
+  ═══════════════════════════════════════════ */
+  --magrana-transition-fast:   0.15s ease-in-out;
+  --magrana-transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ═══════════════════════════════════════════
+     ALIAS — Compatibilidad con variables existentes de cada app
+     (Las apps que usan --primary, --surface etc. seguirán funcionando)
+  ═══════════════════════════════════════════ */
+  --primary:        var(--magrana-primary);
+  --primary-hover:  var(--magrana-primary-hover);
+  --surface:        var(--magrana-surface);
+  --glass-bg:       var(--magrana-glass-bg);
+  --glass-border:   var(--magrana-glass-border);
+  --text-main:      var(--magrana-text);
+  --text-muted:     var(--magrana-text-muted);
+}

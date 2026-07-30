@@ -1,0 +1,6 @@
+node_modules/
+*.log
+
+# dist se incluye en el repo para que las apps puedan usarla sin compilar
+# Descomenta la línea siguiente si prefieres no commitear el build:
+# dist/
