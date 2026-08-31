@@ -22,6 +22,14 @@ export { Button }                  from './components/Button/Button';
 export { Card }                    from './components/Card/Card';
 export { Badge }                   from './components/Badge/Badge';
 
+// ─── Componentes de Layout Compartido ────────────────────────────────────────
+export { SidebarProfileButton }    from './components/SidebarProfileButton/SidebarProfileButton';
+export { AppSettingsModal }        from './components/AppSettingsModal/AppSettingsModal';
+export { ProfileView }             from './components/ProfileView/ProfileView';
+export type { SidebarProfileButtonProps }          from './components/SidebarProfileButton/SidebarProfileButton';
+export type { AppSettingsModalProps, AppSettingsExtraItem } from './components/AppSettingsModal/AppSettingsModal';
+export type { ProfileViewProps }   from './components/ProfileView/ProfileView';
+
 // ─── Componentes de Actividad ────────────────────────────────────────────────
 export { DroppableZone }           from './activities/DroppableZone/DroppableZone';
 export { DraggableItem }           from './activities/DraggableItem/DraggableItem';

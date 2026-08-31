@@ -19,6 +19,12 @@
 export { Button } from './components/Button/Button';
 export { Card } from './components/Card/Card';
 export { Badge } from './components/Badge/Badge';
+export { SidebarProfileButton } from './components/SidebarProfileButton/SidebarProfileButton';
+export { AppSettingsModal } from './components/AppSettingsModal/AppSettingsModal';
+export { ProfileView } from './components/ProfileView/ProfileView';
+export type { SidebarProfileButtonProps } from './components/SidebarProfileButton/SidebarProfileButton';
+export type { AppSettingsModalProps, AppSettingsExtraItem } from './components/AppSettingsModal/AppSettingsModal';
+export type { ProfileViewProps } from './components/ProfileView/ProfileView';
 export { DroppableZone } from './activities/DroppableZone/DroppableZone';
 export { DraggableItem } from './activities/DraggableItem/DraggableItem';
 export { DragDropActivity } from './activities/DragDropActivity/DragDropActivity';

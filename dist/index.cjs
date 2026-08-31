@@ -204,6 +204,496 @@ function Badge({ color = "neutral", children, style, ...rest }) {
 	});
 }
 //#endregion
+//#region src/components/SidebarProfileButton/SidebarProfileButton.tsx
+/**
+* Boton de perfil de docente para la barra lateral de cualquier app Magrana.
+* 
+* @example
+* <SidebarProfileButton
+*   displayName="Miguel Garcia"
+*   avatarGradient="linear-gradient(135deg, #0284c7, #38bdf8)"
+*   accentColor="#38bdf8"
+*   isActive={activeTab === 'profile'}
+*   onClick={() => setActiveTab('profile')}
+* />
+*/
+function SidebarProfileButton({ displayName, initial, avatarGradient = "linear-gradient(135deg, #1E293B, #334155)", accentColor = "#94a3b8", isActive = false, onClick }) {
+	const resolvedInitial = initial || displayName.charAt(0).toUpperCase() || "D";
+	const baseStyle = {
+		display: "flex",
+		alignItems: "center",
+		gap: "0.75rem",
+		padding: "0.6rem 1rem",
+		borderRadius: "12px",
+		border: isActive ? `1px solid ${accentColor}55` : "1px solid rgba(255,255,255,0.08)",
+		background: isActive ? `${accentColor}22` : "rgba(255,255,255,0.04)",
+		cursor: "pointer",
+		width: "100%",
+		textAlign: "left",
+		transition: "background 0.2s, border-color 0.2s",
+		fontFamily: "var(--magrana-font, Inter, sans-serif)"
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+		style: baseStyle,
+		onClick,
+		title: `Mi Perfil — ${displayName}`,
+		onMouseEnter: (e) => {
+			if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+		},
+		onMouseLeave: (e) => {
+			if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+		},
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			style: {
+				width: "36px",
+				height: "36px",
+				borderRadius: "50%",
+				background: avatarGradient,
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				color: "white",
+				fontWeight: 700,
+				fontSize: "0.9rem",
+				flexShrink: 0,
+				boxShadow: "0 2px 8px rgba(0,0,0,0.25)"
+			},
+			children: resolvedInitial
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			style: {
+				flex: 1,
+				minWidth: 0
+			},
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+				style: {
+					fontWeight: 700,
+					fontSize: "0.875rem",
+					color: "#F8FAFC",
+					margin: 0,
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+					whiteSpace: "nowrap",
+					lineHeight: 1.3
+				},
+				children: displayName
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+				style: {
+					fontSize: "0.7rem",
+					color: accentColor,
+					fontWeight: 600,
+					margin: 0,
+					marginTop: "0.1rem"
+				},
+				children: "Docente"
+			})]
+		})]
+	});
+}
+//#endregion
+//#region src/components/AppSettingsModal/AppSettingsModal.tsx
+/**
+* Modal de Configuracion Global estandarizado para todas las apps Magrana.
+* Incluye toggle de tema y filas de configuracion opcionales por app.
+*
+* @example
+* <AppSettingsModal
+*   isOpen={isSettingsOpen}
+*   onClose={() => setIsSettingsOpen(false)}
+*   appName="Magrana Colab v1.0"
+*   appDescription="Mapas conceptuales colaborativos."
+*   appIcon={<Share2 size={20} />}
+*   accentColor="#0284c7"
+*   isDarkMode={isDarkMode}
+*   onToggleDarkMode={toggleDarkMode}
+* />
+*/
+function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, accentColor = "#6366f1", isDarkMode, onToggleDarkMode, extraItems = [] }) {
+	if (!isOpen) return null;
+	const s = {
+		modal: {
+			background: "var(--magrana-settings-bg, #ffffff)",
+			border: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.15))",
+			color: "var(--magrana-settings-text, #0f172a)"
+		},
+		header: {
+			background: "var(--magrana-settings-header-bg, #f8fafc)",
+			borderBottom: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.12))"
+		},
+		row: {
+			background: "var(--magrana-settings-row-bg, rgba(30,41,59,0.04))",
+			border: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.1))"
+		},
+		footer: {
+			background: "var(--magrana-settings-footer-bg, #f8fafc)",
+			borderTop: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.12))"
+		}
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		onClick: onClose,
+		style: {
+			position: "fixed",
+			inset: 0,
+			zIndex: 9999,
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "center",
+			background: "rgba(0,0,0,0.65)",
+			backdropFilter: "blur(8px)",
+			padding: "1rem"
+		},
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			onClick: (e) => e.stopPropagation(),
+			style: {
+				...s.modal,
+				borderRadius: "1.5rem",
+				maxWidth: "480px",
+				width: "100%",
+				boxShadow: "8px 8px 0px #1E293B",
+				display: "flex",
+				flexDirection: "column",
+				overflow: "hidden",
+				fontFamily: "var(--magrana-font, Inter, sans-serif)"
+			},
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					style: {
+						...s.header,
+						padding: "1.25rem 1.5rem",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between"
+					},
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("h2", {
+						style: {
+							margin: 0,
+							fontSize: "1.25rem",
+							fontWeight: 800,
+							display: "flex",
+							alignItems: "center",
+							gap: "0.6rem"
+						},
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							style: { color: accentColor },
+							children: "⚙"
+						}), "Configuración Global"]
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						onClick: onClose,
+						style: {
+							background: "rgba(30,41,59,0.08)",
+							border: "1px solid rgba(30,41,59,0.12)",
+							borderRadius: "8px",
+							width: "32px",
+							height: "32px",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							cursor: "pointer",
+							fontSize: "1rem",
+							color: "var(--magrana-settings-text, #0f172a)"
+						},
+						children: "✕"
+					})]
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					style: {
+						padding: "1.25rem 1.5rem",
+						display: "flex",
+						flexDirection: "column",
+						gap: "0.875rem"
+					},
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							style: {
+								...s.row,
+								borderRadius: "0.875rem",
+								padding: "0.875rem 1rem",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between"
+							},
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								style: {
+									fontWeight: 700,
+									fontSize: "0.9rem",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem"
+								},
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: isDarkMode ? "🌙" : "☀️" }), " Tema Visual"]
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								style: {
+									fontSize: "0.75rem",
+									marginTop: "0.2rem",
+									opacity: .7
+								},
+								children: isDarkMode ? "Modo Noche (Oscuro)" : "Modo Luz (Claro)"
+							})] }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								onClick: onToggleDarkMode,
+								style: {
+									width: "48px",
+									height: "26px",
+									borderRadius: "9999px",
+									border: "none",
+									padding: "3px",
+									background: isDarkMode ? accentColor : "#CBD5E1",
+									cursor: "pointer",
+									transition: "background 0.2s",
+									flexShrink: 0
+								},
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { style: {
+									width: "20px",
+									height: "20px",
+									borderRadius: "50%",
+									background: "white",
+									transform: isDarkMode ? "translateX(22px)" : "translateX(0)",
+									transition: "transform 0.2s"
+								} })
+							})]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							style: {
+								...s.row,
+								borderRadius: "0.875rem",
+								padding: "0.875rem 1rem"
+							},
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								style: {
+									fontWeight: 700,
+									fontSize: "0.9rem",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem"
+								},
+								children: [
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										style: { color: accentColor },
+										children: appIcon
+									}),
+									" ",
+									appName
+								]
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								style: {
+									fontSize: "0.75rem",
+									marginTop: "0.35rem",
+									opacity: .7,
+									lineHeight: 1.5
+								},
+								children: appDescription
+							})]
+						}),
+						extraItems.map((item, i) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							style: {
+								...s.row,
+								borderRadius: "0.875rem",
+								padding: "0.875rem 1rem",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between"
+							},
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								style: {
+									fontWeight: 700,
+									fontSize: "0.9rem",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem"
+								},
+								children: [
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										style: { color: accentColor },
+										children: item.icon
+									}),
+									" ",
+									item.label
+								]
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								style: {
+									fontSize: "0.75rem",
+									marginTop: "0.2rem",
+									opacity: .7
+								},
+								children: item.description
+							})] }), item.onToggle !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								onClick: item.onToggle,
+								style: {
+									width: "48px",
+									height: "26px",
+									borderRadius: "9999px",
+									border: "none",
+									padding: "3px",
+									background: item.toggleValue ? accentColor : "#CBD5E1",
+									cursor: "pointer",
+									transition: "background 0.2s",
+									flexShrink: 0
+								},
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { style: {
+									width: "20px",
+									height: "20px",
+									borderRadius: "50%",
+									background: "white",
+									transform: item.toggleValue ? "translateX(22px)" : "translateX(0)",
+									transition: "transform 0.2s"
+								} })
+							})]
+						}, i))
+					]
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					style: {
+						...s.footer,
+						padding: "1rem 1.5rem",
+						display: "flex",
+						justifyContent: "flex-end"
+					},
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						onClick: onClose,
+						style: {
+							background: accentColor,
+							color: "white",
+							border: "none",
+							borderRadius: "10px",
+							padding: "0.6rem 1.5rem",
+							fontWeight: 700,
+							cursor: "pointer",
+							fontSize: "0.9rem",
+							transition: "opacity 0.2s"
+						},
+						onMouseEnter: (e) => e.currentTarget.style.opacity = "0.85",
+						onMouseLeave: (e) => e.currentTarget.style.opacity = "1",
+						children: "Cerrar"
+					})
+				})
+			]
+		})
+	});
+}
+//#endregion
+//#region src/components/ProfileView/ProfileView.tsx
+var defaultSignOut = () => {
+	if (window.top) window.top.location.href = "https://magranaedu.com/#acceso";
+	else window.location.href = "https://magranaedu.com/#acceso";
+};
+/**
+* Vista de perfil estandarizada para todas las apps Magrana.
+* Muestra informacion del docente y boton de Cerrar Sesion.
+*
+* @example
+* <ProfileView
+*   displayName="Miguel Garcia"
+*   email="miguel@magranaedu.com"
+*   avatarGradient="linear-gradient(135deg, #0284c7, #38bdf8)"
+*   accentColor="#0284c7"
+* />
+*/
+function ProfileView({ displayName, email, avatarGradient = "linear-gradient(135deg, #1E293B, #334155)", accentColor = "#6366f1", onSignOut, children }) {
+	const initial = displayName.charAt(0).toUpperCase() || "D";
+	const handleSignOut = onSignOut ?? defaultSignOut;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		style: {
+			width: "100%",
+			maxWidth: "640px",
+			margin: "0 auto",
+			display: "flex",
+			flexDirection: "column",
+			gap: "1.5rem",
+			fontFamily: "var(--magrana-font, Inter, sans-serif)"
+		},
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				style: {
+					background: "var(--magrana-profile-card-bg, rgba(255,255,255,0.06))",
+					border: "1px solid var(--magrana-profile-card-border, rgba(255,255,255,0.12))",
+					borderRadius: "1.5rem",
+					padding: "2rem",
+					boxShadow: "5px 5px 0px rgba(30,41,59,0.15)",
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					gap: "1rem",
+					textAlign: "center"
+				},
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					style: {
+						width: "80px",
+						height: "80px",
+						borderRadius: "50%",
+						background: avatarGradient,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						color: "white",
+						fontWeight: 800,
+						fontSize: "2rem",
+						boxShadow: `0 4px 20px ${accentColor}55`
+					},
+					children: initial
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h2", {
+						style: {
+							margin: 0,
+							fontSize: "1.4rem",
+							fontWeight: 800,
+							color: "var(--magrana-profile-text, inherit)"
+						},
+						children: displayName
+					}),
+					email && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						style: {
+							margin: "0.35rem 0 0",
+							fontSize: "0.85rem",
+							opacity: .65,
+							color: "var(--magrana-profile-text, inherit)"
+						},
+						children: email
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						style: {
+							display: "inline-flex",
+							alignItems: "center",
+							marginTop: "0.75rem",
+							padding: "0.25rem 0.75rem",
+							borderRadius: "20px",
+							background: `${accentColor}22`,
+							color: accentColor,
+							border: `1px solid ${accentColor}44`,
+							fontWeight: 700,
+							fontSize: "0.78rem",
+							letterSpacing: "0.02em"
+						},
+						children: "✦ Docente"
+					})
+				] })]
+			}),
+			children,
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				onClick: handleSignOut,
+				style: {
+					background: "transparent",
+					border: "2px solid #ef4444",
+					color: "#ef4444",
+					borderRadius: "12px",
+					padding: "0.75rem 1.5rem",
+					fontWeight: 700,
+					fontSize: "0.95rem",
+					cursor: "pointer",
+					transition: "background 0.2s, color 0.2s",
+					letterSpacing: "0.01em"
+				},
+				onMouseEnter: (e) => {
+					e.currentTarget.style.background = "#ef4444";
+					e.currentTarget.style.color = "white";
+				},
+				onMouseLeave: (e) => {
+					e.currentTarget.style.background = "transparent";
+					e.currentTarget.style.color = "#ef4444";
+				},
+				children: "🚪 Cerrar Sesion"
+			})
+		]
+	});
+}
+//#endregion
 //#region ../../node_modules/@dnd-kit/utilities/dist/utilities.esm.js
 var canUseDOM = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
 function isWindow(element) {
@@ -5168,6 +5658,7 @@ function HeatmapActivity({ slide, onNext, baseUrl = "" }) {
 	});
 }
 //#endregion
+exports.AppSettingsModal = AppSettingsModal;
 exports.Badge = Badge;
 exports.Button = Button;
 exports.Card = Card;
@@ -5175,6 +5666,8 @@ exports.DragDropActivity = DragDropActivity;
 exports.DraggableItem = DraggableItem;
 exports.DroppableZone = DroppableZone;
 exports.HeatmapActivity = HeatmapActivity;
+exports.ProfileView = ProfileView;
+exports.SidebarProfileButton = SidebarProfileButton;
 exports.isPinCorrect = isPinCorrect;
 exports.resolveImageUrl = resolveImageUrl;
 exports.shuffleArray = shuffleArray;
