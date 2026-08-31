@@ -583,8 +583,15 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 //#endregion
 //#region src/components/ProfileView/ProfileView.tsx
 var defaultSignOut = () => {
-	if (window.top) window.top.location.href = "https://magranaedu.com/#acceso";
-	else window.location.href = "https://magranaedu.com/#acceso";
+	try {
+		if (window.parent && window.parent !== window) {
+			window.parent.postMessage({ type: "MAGRANA_LOGOUT" }, "*");
+			window.parent.postMessage({ type: "MAGRANA_CLOSE_APP" }, "*");
+		}
+	} catch (e) {}
+	const targetUrl = "https://magranaedu.com/#acceso";
+	if (window.top && window.top !== window) window.top.location.href = targetUrl;
+	else window.location.href = targetUrl;
 };
 /**
 * Vista de perfil estandarizada y completa para todas las apps Magrana.
