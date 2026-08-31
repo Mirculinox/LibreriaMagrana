@@ -284,25 +284,16 @@ function SidebarProfileButton({ displayName, initial, avatarGradient = "linear-g
 */
 function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, accentColor = "#6366f1", isDarkMode, onToggleDarkMode, extraItems = [] }) {
 	if (!isOpen) return null;
-	const s = {
-		modal: {
-			background: "var(--magrana-settings-bg, #ffffff)",
-			border: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.15))",
-			color: "var(--magrana-settings-text, #0f172a)"
-		},
-		header: {
-			background: "var(--magrana-settings-header-bg, #f8fafc)",
-			borderBottom: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.12))"
-		},
-		row: {
-			background: "var(--magrana-settings-row-bg, rgba(30,41,59,0.04))",
-			border: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.1))"
-		},
-		footer: {
-			background: "var(--magrana-settings-footer-bg, #f8fafc)",
-			borderTop: "1px solid var(--magrana-settings-border, rgba(30,41,59,0.12))"
-		}
-	};
+	const bgModal = isDarkMode ? "#0f172a" : "#ffffff";
+	const borderModal = isDarkMode ? "#334155" : "#e2e8f0";
+	const textPrimary = isDarkMode ? "#f8fafc" : "#0f172a";
+	const textSecondary = isDarkMode ? "#94a3b8" : "#64748b";
+	const bgHeader = isDarkMode ? "#1e293b" : "#f8fafc";
+	const bgRow = isDarkMode ? "rgba(255, 255, 255, 0.03)" : "#f8fafc";
+	const borderRow = isDarkMode ? "#334155" : "#e2e8f0";
+	const bgFooter = isDarkMode ? "#1e293b" : "#f8fafc";
+	const closeBtnBg = isDarkMode ? "rgba(255, 255, 255, 0.08)" : "#e2e8f0";
+	const closeBtnText = isDarkMode ? "#f8fafc" : "#334155";
 	return /* @__PURE__ */ jsx("div", {
 		onClick: onClose,
 		style: {
@@ -312,27 +303,30 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 			display: "flex",
 			alignItems: "center",
 			justifyContent: "center",
-			background: "rgba(0,0,0,0.65)",
+			backgroundColor: "rgba(0, 0, 0, 0.65)",
 			backdropFilter: "blur(8px)",
 			padding: "1rem"
 		},
 		children: /* @__PURE__ */ jsxs("div", {
 			onClick: (e) => e.stopPropagation(),
 			style: {
-				...s.modal,
+				backgroundColor: bgModal,
+				border: `1px solid ${borderModal}`,
 				borderRadius: "1.5rem",
 				maxWidth: "480px",
 				width: "100%",
-				boxShadow: "8px 8px 0px #1E293B",
+				boxShadow: isDarkMode ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)" : "8px 8px 0px #1E293B, 0 20px 25px -5px rgba(0, 0, 0, 0.1)",
 				display: "flex",
 				flexDirection: "column",
 				overflow: "hidden",
-				fontFamily: "var(--magrana-font, Inter, sans-serif)"
+				fontFamily: "Inter, system-ui, -apple-system, sans-serif",
+				color: textPrimary
 			},
 			children: [
 				/* @__PURE__ */ jsxs("div", {
 					style: {
-						...s.header,
+						backgroundColor: bgHeader,
+						borderBottom: `1px solid ${borderModal}`,
 						padding: "1.25rem 1.5rem",
 						display: "flex",
 						alignItems: "center",
@@ -345,7 +339,8 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 							fontWeight: 800,
 							display: "flex",
 							alignItems: "center",
-							gap: "0.6rem"
+							gap: "0.6rem",
+							color: textPrimary
 						},
 						children: [/* @__PURE__ */ jsx("span", {
 							style: { color: accentColor },
@@ -354,8 +349,8 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 					}), /* @__PURE__ */ jsx("button", {
 						onClick: onClose,
 						style: {
-							background: "rgba(30,41,59,0.08)",
-							border: "1px solid rgba(30,41,59,0.12)",
+							backgroundColor: closeBtnBg,
+							border: "none",
 							borderRadius: "8px",
 							width: "32px",
 							height: "32px",
@@ -364,7 +359,8 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 							justifyContent: "center",
 							cursor: "pointer",
 							fontSize: "1rem",
-							color: "var(--magrana-settings-text, #0f172a)"
+							color: closeBtnText,
+							fontWeight: "bold"
 						},
 						children: "✕"
 					})]
@@ -374,12 +370,14 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 						padding: "1.25rem 1.5rem",
 						display: "flex",
 						flexDirection: "column",
-						gap: "0.875rem"
+						gap: "0.875rem",
+						backgroundColor: bgModal
 					},
 					children: [
 						/* @__PURE__ */ jsxs("div", {
 							style: {
-								...s.row,
+								backgroundColor: bgRow,
+								border: `1px solid ${borderRow}`,
 								borderRadius: "0.875rem",
 								padding: "0.875rem 1rem",
 								display: "flex",
@@ -392,14 +390,15 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 									fontSize: "0.9rem",
 									display: "flex",
 									alignItems: "center",
-									gap: "0.5rem"
+									gap: "0.5rem",
+									color: textPrimary
 								},
 								children: [/* @__PURE__ */ jsx("span", { children: isDarkMode ? "🌙" : "☀️" }), " Tema Visual"]
 							}), /* @__PURE__ */ jsx("div", {
 								style: {
 									fontSize: "0.75rem",
 									marginTop: "0.2rem",
-									opacity: .7
+									color: textSecondary
 								},
 								children: isDarkMode ? "Modo Noche (Oscuro)" : "Modo Luz (Claro)"
 							})] }), /* @__PURE__ */ jsx("button", {
@@ -410,16 +409,16 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 									borderRadius: "9999px",
 									border: "none",
 									padding: "3px",
-									background: isDarkMode ? accentColor : "#CBD5E1",
+									backgroundColor: isDarkMode ? accentColor : "#cbd5e1",
 									cursor: "pointer",
-									transition: "background 0.2s",
+									transition: "background-color 0.2s",
 									flexShrink: 0
 								},
 								children: /* @__PURE__ */ jsx("div", { style: {
 									width: "20px",
 									height: "20px",
 									borderRadius: "50%",
-									background: "white",
+									backgroundColor: "white",
 									transform: isDarkMode ? "translateX(22px)" : "translateX(0)",
 									transition: "transform 0.2s"
 								} })
@@ -427,7 +426,8 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 						}),
 						/* @__PURE__ */ jsxs("div", {
 							style: {
-								...s.row,
+								backgroundColor: bgRow,
+								border: `1px solid ${borderRow}`,
 								borderRadius: "0.875rem",
 								padding: "0.875rem 1rem"
 							},
@@ -437,11 +437,16 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 									fontSize: "0.9rem",
 									display: "flex",
 									alignItems: "center",
-									gap: "0.5rem"
+									gap: "0.5rem",
+									color: textPrimary
 								},
 								children: [
 									/* @__PURE__ */ jsx("span", {
-										style: { color: accentColor },
+										style: {
+											color: accentColor,
+											display: "flex",
+											alignItems: "center"
+										},
 										children: appIcon
 									}),
 									" ",
@@ -451,7 +456,7 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 								style: {
 									fontSize: "0.75rem",
 									marginTop: "0.35rem",
-									opacity: .7,
+									color: textSecondary,
 									lineHeight: 1.5
 								},
 								children: appDescription
@@ -459,7 +464,8 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 						}),
 						extraItems.map((item, i) => /* @__PURE__ */ jsxs("div", {
 							style: {
-								...s.row,
+								backgroundColor: bgRow,
+								border: `1px solid ${borderRow}`,
 								borderRadius: "0.875rem",
 								padding: "0.875rem 1rem",
 								display: "flex",
@@ -472,11 +478,16 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 									fontSize: "0.9rem",
 									display: "flex",
 									alignItems: "center",
-									gap: "0.5rem"
+									gap: "0.5rem",
+									color: textPrimary
 								},
 								children: [
 									/* @__PURE__ */ jsx("span", {
-										style: { color: accentColor },
+										style: {
+											color: accentColor,
+											display: "flex",
+											alignItems: "center"
+										},
 										children: item.icon
 									}),
 									" ",
@@ -486,7 +497,7 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 								style: {
 									fontSize: "0.75rem",
 									marginTop: "0.2rem",
-									opacity: .7
+									color: textSecondary
 								},
 								children: item.description
 							})] }), item.onToggle !== void 0 && /* @__PURE__ */ jsx("button", {
@@ -497,16 +508,16 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 									borderRadius: "9999px",
 									border: "none",
 									padding: "3px",
-									background: item.toggleValue ? accentColor : "#CBD5E1",
+									backgroundColor: item.toggleValue ? accentColor : "#cbd5e1",
 									cursor: "pointer",
-									transition: "background 0.2s",
+									transition: "background-color 0.2s",
 									flexShrink: 0
 								},
 								children: /* @__PURE__ */ jsx("div", { style: {
 									width: "20px",
 									height: "20px",
 									borderRadius: "50%",
-									background: "white",
+									backgroundColor: "white",
 									transform: item.toggleValue ? "translateX(22px)" : "translateX(0)",
 									transition: "transform 0.2s"
 								} })
@@ -516,7 +527,8 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 				}),
 				/* @__PURE__ */ jsx("div", {
 					style: {
-						...s.footer,
+						backgroundColor: bgFooter,
+						borderTop: `1px solid ${borderModal}`,
 						padding: "1rem 1.5rem",
 						display: "flex",
 						justifyContent: "flex-end"
@@ -524,7 +536,7 @@ function AppSettingsModal({ isOpen, onClose, appName, appDescription, appIcon, a
 					children: /* @__PURE__ */ jsx("button", {
 						onClick: onClose,
 						style: {
-							background: accentColor,
+							backgroundColor: accentColor,
 							color: "white",
 							border: "none",
 							borderRadius: "10px",
@@ -550,120 +562,398 @@ var defaultSignOut = () => {
 	else window.location.href = "https://magranaedu.com/#acceso";
 };
 /**
-* Vista de perfil estandarizada para todas las apps Magrana.
-* Muestra informacion del docente y boton de Cerrar Sesion.
-*
-* @example
-* <ProfileView
-*   displayName="Miguel Garcia"
-*   email="miguel@magranaedu.com"
-*   avatarGradient="linear-gradient(135deg, #0284c7, #38bdf8)"
-*   accentColor="#0284c7"
-* />
+* Vista de perfil estandarizada y completa para todas las apps Magrana.
+* Muestra avatar, nombre, email, rol, enlace de gestión al Hub y soporte para borrado de datos.
 */
-function ProfileView({ displayName, email, avatarGradient = "linear-gradient(135deg, #1E293B, #334155)", accentColor = "#6366f1", onSignOut, children }) {
+function ProfileView({ displayName, email, role = "Docente", avatarUrl, avatarGradient = "linear-gradient(135deg, #1E293B, #334155)", accentColor = "#6366f1", onSignOut, onDeleteAccount, isDarkMode = true, children }) {
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [deleteConfirmation, setDeleteConfirmation] = useState("");
+	const [isDeleting, setIsDeleting] = useState(false);
 	const initial = displayName.charAt(0).toUpperCase() || "D";
 	const handleSignOut = onSignOut ?? defaultSignOut;
+	const bgCard = isDarkMode ? "#0f172a" : "#ffffff";
+	const borderCard = isDarkMode ? "#334155" : "#e2e8f0";
+	const textPrimary = isDarkMode ? "#f8fafc" : "#0f172a";
+	const textSecondary = isDarkMode ? "#94a3b8" : "#64748b";
+	const bgSubcard = isDarkMode ? "rgba(255, 255, 255, 0.03)" : "#f8fafc";
 	return /* @__PURE__ */ jsxs("div", {
 		style: {
 			width: "100%",
-			maxWidth: "640px",
+			maxWidth: "680px",
 			margin: "0 auto",
 			display: "flex",
 			flexDirection: "column",
 			gap: "1.5rem",
-			fontFamily: "var(--magrana-font, Inter, sans-serif)"
+			fontFamily: "Inter, system-ui, -apple-system, sans-serif",
+			color: textPrimary
 		},
 		children: [
 			/* @__PURE__ */ jsxs("div", {
 				style: {
-					background: "var(--magrana-profile-card-bg, rgba(255,255,255,0.06))",
-					border: "1px solid var(--magrana-profile-card-border, rgba(255,255,255,0.12))",
+					backgroundColor: bgCard,
+					border: `1px solid ${borderCard}`,
 					borderRadius: "1.5rem",
 					padding: "2rem",
-					boxShadow: "5px 5px 0px rgba(30,41,59,0.15)",
+					boxShadow: isDarkMode ? "0 20px 25px -5px rgba(0, 0, 0, 0.5)" : "5px 5px 0px #1E293B, 0 10px 15px -3px rgba(0, 0, 0, 0.05)",
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
-					gap: "1rem",
-					textAlign: "center"
+					gap: "1.25rem",
+					textAlign: "center",
+					position: "relative",
+					overflow: "hidden"
 				},
-				children: [/* @__PURE__ */ jsx("div", {
-					style: {
-						width: "80px",
-						height: "80px",
+				children: [
+					/* @__PURE__ */ jsx("div", { style: {
+						position: "absolute",
+						top: "-50px",
+						right: "-50px",
+						width: "180px",
+						height: "180px",
+						backgroundColor: `${accentColor}15`,
 						borderRadius: "50%",
-						background: avatarGradient,
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						color: "white",
-						fontWeight: 800,
-						fontSize: "2rem",
-						boxShadow: `0 4px 20px ${accentColor}55`
-					},
-					children: initial
-				}), /* @__PURE__ */ jsxs("div", { children: [
-					/* @__PURE__ */ jsx("h2", {
+						filter: "blur(50px)",
+						pointerEvents: "none"
+					} }),
+					/* @__PURE__ */ jsx("div", {
+						style: {
+							width: "88px",
+							height: "88px",
+							borderRadius: "50%",
+							background: avatarUrl ? `url(${avatarUrl}) center/cover no-repeat` : avatarGradient,
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							color: "white",
+							fontWeight: 800,
+							fontSize: "2.2rem",
+							boxShadow: `0 8px 24px ${accentColor}44`,
+							border: `3px solid ${isDarkMode ? "#1e293b" : "#ffffff"}`,
+							flexShrink: 0
+						},
+						children: !avatarUrl && initial
+					}),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h2", {
 						style: {
 							margin: 0,
-							fontSize: "1.4rem",
+							fontSize: "1.5rem",
 							fontWeight: 800,
-							color: "var(--magrana-profile-text, inherit)"
+							letterSpacing: "-0.02em",
+							color: textPrimary
 						},
 						children: displayName
-					}),
-					email && /* @__PURE__ */ jsx("p", {
+					}), /* @__PURE__ */ jsxs("div", {
 						style: {
-							margin: "0.35rem 0 0",
-							fontSize: "0.85rem",
-							opacity: .65,
-							color: "var(--magrana-profile-text, inherit)"
+							display: "flex",
+							flexWrap: "wrap",
+							gap: "0.5rem",
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: "0.5rem"
 						},
-						children: email
+						children: [email && /* @__PURE__ */ jsxs("span", {
+							style: {
+								fontSize: "0.85rem",
+								color: textSecondary,
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "0.35rem",
+								padding: "0.2rem 0.6rem",
+								borderRadius: "9999px",
+								backgroundColor: bgSubcard,
+								border: `1px solid ${borderCard}`
+							},
+							children: ["✉ ", email]
+						}), /* @__PURE__ */ jsxs("span", {
+							style: {
+								fontSize: "0.8rem",
+								color: accentColor,
+								fontWeight: 700,
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "0.3rem",
+								padding: "0.2rem 0.65rem",
+								borderRadius: "9999px",
+								backgroundColor: `${accentColor}18`,
+								border: `1px solid ${accentColor}33`
+							},
+							children: ["✦ ", role]
+						})]
+					})] }),
+					/* @__PURE__ */ jsxs("div", {
+						style: {
+							display: "flex",
+							flexWrap: "wrap",
+							gap: "0.75rem",
+							justifyContent: "center",
+							width: "100%",
+							borderTop: `1px solid ${borderCard}`,
+							paddingTop: "1.25rem",
+							marginTop: "0.25rem"
+						},
+						children: [/* @__PURE__ */ jsx("button", {
+							onClick: handleSignOut,
+							style: {
+								backgroundColor: "rgba(239, 68, 68, 0.1)",
+								border: "1px solid rgba(239, 68, 68, 0.3)",
+								color: "#ef4444",
+								borderRadius: "12px",
+								padding: "0.65rem 1.4rem",
+								fontWeight: 700,
+								fontSize: "0.9rem",
+								cursor: "pointer",
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "0.4rem",
+								transition: "all 0.2s"
+							},
+							onMouseEnter: (e) => {
+								e.currentTarget.style.backgroundColor = "#ef4444";
+								e.currentTarget.style.color = "#ffffff";
+							},
+							onMouseLeave: (e) => {
+								e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+								e.currentTarget.style.color = "#ef4444";
+							},
+							children: "🚪 Cerrar Sesión"
+						}), onDeleteAccount && /* @__PURE__ */ jsx("button", {
+							onClick: () => setIsDeleteModalOpen(true),
+							style: {
+								backgroundColor: bgSubcard,
+								border: `1px solid ${borderCard}`,
+								color: textSecondary,
+								borderRadius: "12px",
+								padding: "0.65rem 1.4rem",
+								fontWeight: 600,
+								fontSize: "0.9rem",
+								cursor: "pointer",
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "0.4rem",
+								transition: "all 0.2s"
+							},
+							onMouseEnter: (e) => {
+								e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.15)";
+								e.currentTarget.style.color = "#ef4444";
+								e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.3)";
+							},
+							onMouseLeave: (e) => {
+								e.currentTarget.style.backgroundColor = bgSubcard;
+								e.currentTarget.style.color = textSecondary;
+								e.currentTarget.style.borderColor = borderCard;
+							},
+							children: "🗑 Eliminar Perfil y Datos"
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				style: {
+					backgroundColor: bgCard,
+					border: `1px solid ${borderCard}`,
+					borderRadius: "1.25rem",
+					padding: "1.5rem",
+					display: "flex",
+					flexDirection: "column",
+					gap: "0.75rem",
+					boxShadow: isDarkMode ? "none" : "0 2px 4px rgba(0,0,0,0.04)"
+				},
+				children: [
+					/* @__PURE__ */ jsx("h3", {
+						style: {
+							margin: 0,
+							fontSize: "1.1rem",
+							fontWeight: 700,
+							color: textPrimary
+						},
+						children: "⚙ Ajustes Globales de Cuenta"
 					}),
-					/* @__PURE__ */ jsx("span", {
+					/* @__PURE__ */ jsx("p", {
+						style: {
+							margin: 0,
+							fontSize: "0.85rem",
+							color: textSecondary,
+							lineHeight: 1.5
+						},
+						children: "Para modificar tu nombre, contraseña o foto de perfil de todas las aplicaciones de Magrana, dirígete al Hub Principal."
+					}),
+					/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx("a", {
+						href: "https://magranaedu.com/#acceso",
+						target: "_blank",
+						rel: "noreferrer",
 						style: {
 							display: "inline-flex",
 							alignItems: "center",
-							marginTop: "0.75rem",
-							padding: "0.25rem 0.75rem",
-							borderRadius: "20px",
-							background: `${accentColor}22`,
-							color: accentColor,
-							border: `1px solid ${accentColor}44`,
-							fontWeight: 700,
-							fontSize: "0.78rem",
-							letterSpacing: "0.02em"
+							gap: "0.4rem",
+							backgroundColor: bgSubcard,
+							border: `1px solid ${borderCard}`,
+							borderRadius: "10px",
+							padding: "0.5rem 1rem",
+							fontSize: "0.85rem",
+							fontWeight: 600,
+							color: textPrimary,
+							textDecoration: "none",
+							transition: "all 0.2s"
 						},
-						children: "✦ Docente"
-					})
-				] })]
+						onMouseEnter: (e) => {
+							e.currentTarget.style.borderColor = accentColor;
+							e.currentTarget.style.color = accentColor;
+						},
+						onMouseLeave: (e) => {
+							e.currentTarget.style.borderColor = borderCard;
+							e.currentTarget.style.color = textPrimary;
+						},
+						children: "Ir a Gestión de Perfil en Magrana ↗"
+					}) })
+				]
 			}),
 			children,
-			/* @__PURE__ */ jsx("button", {
-				onClick: handleSignOut,
+			isDeleteModalOpen && onDeleteAccount && /* @__PURE__ */ jsx("div", {
+				onClick: () => setIsDeleteModalOpen(false),
 				style: {
-					background: "transparent",
-					border: "2px solid #ef4444",
-					color: "#ef4444",
-					borderRadius: "12px",
-					padding: "0.75rem 1.5rem",
-					fontWeight: 700,
-					fontSize: "0.95rem",
-					cursor: "pointer",
-					transition: "background 0.2s, color 0.2s",
-					letterSpacing: "0.01em"
+					position: "fixed",
+					inset: 0,
+					zIndex: 9999,
+					backgroundColor: "rgba(0,0,0,0.7)",
+					backdropFilter: "blur(6px)",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					padding: "1rem"
 				},
-				onMouseEnter: (e) => {
-					e.currentTarget.style.background = "#ef4444";
-					e.currentTarget.style.color = "white";
-				},
-				onMouseLeave: (e) => {
-					e.currentTarget.style.background = "transparent";
-					e.currentTarget.style.color = "#ef4444";
-				},
-				children: "🚪 Cerrar Sesion"
+				children: /* @__PURE__ */ jsxs("div", {
+					onClick: (e) => e.stopPropagation(),
+					style: {
+						backgroundColor: bgCard,
+						border: `1px solid ${borderCard}`,
+						borderRadius: "1.5rem",
+						maxWidth: "440px",
+						width: "100%",
+						padding: "1.75rem",
+						display: "flex",
+						flexDirection: "column",
+						gap: "1rem",
+						textAlign: "center",
+						boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)"
+					},
+					children: [
+						/* @__PURE__ */ jsx("div", {
+							style: {
+								width: "56px",
+								height: "56px",
+								borderRadius: "50%",
+								backgroundColor: "rgba(239, 68, 68, 0.15)",
+								color: "#ef4444",
+								fontSize: "1.75rem",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								margin: "0 auto"
+							},
+							children: "⚠"
+						}),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h3", {
+							style: {
+								margin: 0,
+								fontSize: "1.2rem",
+								fontWeight: 800,
+								color: textPrimary
+							},
+							children: "¿Eliminar perfil y datos?"
+						}), /* @__PURE__ */ jsx("p", {
+							style: {
+								margin: "0.5rem 0 0",
+								fontSize: "0.85rem",
+								color: textSecondary,
+								lineHeight: 1.5
+							},
+							children: "Esta acción es irreversible y borrará tus datos creados en esta app."
+						})] }),
+						/* @__PURE__ */ jsxs("div", {
+							style: {
+								backgroundColor: "rgba(239, 68, 68, 0.05)",
+								border: "1px solid rgba(239, 68, 68, 0.2)",
+								borderRadius: "10px",
+								padding: "0.75rem",
+								textAlign: "left"
+							},
+							children: [/* @__PURE__ */ jsx("label", {
+								style: {
+									fontSize: "0.75rem",
+									fontWeight: 700,
+									color: "#ef4444",
+									display: "block",
+									marginBottom: "0.35rem"
+								},
+								children: "ESCRIBE \"ELIMINAR\" PARA CONFIRMAR:"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: deleteConfirmation,
+								onChange: (e) => setDeleteConfirmation(e.target.value),
+								placeholder: "ELIMINAR",
+								style: {
+									width: "100%",
+									boxSizing: "border-box",
+									padding: "0.5rem",
+									borderRadius: "6px",
+									border: `1px solid ${borderCard}`,
+									backgroundColor: bgSubcard,
+									color: textPrimary,
+									fontSize: "0.9rem",
+									outline: "none"
+								}
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							style: {
+								display: "flex",
+								gap: "0.75rem",
+								marginTop: "0.5rem"
+							},
+							children: [/* @__PURE__ */ jsx("button", {
+								onClick: () => {
+									setIsDeleteModalOpen(false);
+									setDeleteConfirmation("");
+								},
+								style: {
+									flex: 1,
+									padding: "0.65rem",
+									borderRadius: "10px",
+									border: `1px solid ${borderCard}`,
+									backgroundColor: bgSubcard,
+									color: textPrimary,
+									fontWeight: 600,
+									cursor: "pointer"
+								},
+								children: "Cancelar"
+							}), /* @__PURE__ */ jsx("button", {
+								disabled: deleteConfirmation !== "ELIMINAR" || isDeleting,
+								onClick: async () => {
+									if (deleteConfirmation === "ELIMINAR") {
+										setIsDeleting(true);
+										try {
+											await onDeleteAccount();
+										} finally {
+											setIsDeleting(false);
+										}
+									}
+								},
+								style: {
+									flex: 1,
+									padding: "0.65rem",
+									borderRadius: "10px",
+									border: "none",
+									backgroundColor: "#ef4444",
+									color: "#ffffff",
+									fontWeight: 700,
+									cursor: deleteConfirmation === "ELIMINAR" && !isDeleting ? "pointer" : "not-allowed",
+									opacity: deleteConfirmation === "ELIMINAR" && !isDeleting ? 1 : .5
+								},
+								children: isDeleting ? "Borrando..." : "Borrar todo"
+							})]
+						})
+					]
+				})
 			})
 		]
 	});
