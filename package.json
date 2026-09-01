@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "build": "vite build",
+    "prepare": "vite build",
     "dev": "vite build --watch"
   },
   "peerDependencies": {
