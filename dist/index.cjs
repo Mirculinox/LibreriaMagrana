@@ -3617,18 +3617,37 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 	const [placements, setPlacements] = (0, react$1.useState)({});
 	const [selectedDefs, setSelectedDefs] = (0, react$1.useState)({});
 	const [showResults, setShowResults] = (0, react$1.useState)(false);
+	const [hoveredZoneId, setHoveredZoneId] = (0, react$1.useState)(null);
+	const [expandedCards, setExpandedCards] = (0, react$1.useState)({});
+	const [allExpanded, setAllExpanded] = (0, react$1.useState)(false);
 	(0, react$1.useEffect)(() => {
 		setPlacements({});
 		setSelectedDefs({});
 		setShowResults(false);
+		setHoveredZoneId(null);
+		setExpandedCards({});
+		setAllExpanded(false);
 	}, [slide]);
 	const handleDragEnd = (event) => {
 		if (showResults) return;
 		const { active, over } = event;
-		if (over && !placements[over.id]) setPlacements({
-			...placements,
-			[over.id]: String(active.id)
-		});
+		if (over && !placements[over.id]) {
+			setPlacements({
+				...placements,
+				[over.id]: String(active.id)
+			});
+			setExpandedCards((prev) => ({
+				...prev,
+				[over.id]: true
+			}));
+		}
+	};
+	const toggleCard = (zoneId, e) => {
+		e?.stopPropagation();
+		setExpandedCards((prev) => ({
+			...prev,
+			[zoneId]: !prev[zoneId]
+		}));
 	};
 	const placedItemIds = Object.values(placements);
 	const availableItems = slide.dropZones.filter((z) => !placedItemIds.includes(String(z.id)));
@@ -3651,22 +3670,51 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 			style: {
 				display: "grid",
-				gridTemplateColumns: "1fr 350px",
+				gridTemplateColumns: "1fr 360px",
 				gap: "2rem"
 			},
-			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				style: {
 					display: "flex",
-					justifyContent: "center",
-					alignItems: "flex-start"
+					flexDirection: "column",
+					alignItems: "center",
+					gap: "0.75rem"
 				},
-				children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				children: [Object.keys(placements).length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					style: {
+						width: "100%",
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						padding: "0.4rem 1rem",
+						background: "var(--magrana-surface, #141414)",
+						borderRadius: "10px",
+						border: "1px solid var(--magrana-glass-border, rgba(255,255,255,0.08))",
+						fontSize: "0.85rem"
+					},
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						style: { color: "var(--magrana-text-muted, #A1A1AA)" },
+						children: "💡 Pasa el ratón sobre cualquier tarjeta para verla en detalle"
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						onClick: () => setAllExpanded(!allExpanded),
+						style: {
+							padding: "0.25rem 0.75rem",
+							fontSize: "0.8rem",
+							background: allExpanded ? "var(--magrana-primary, #FB7185)" : "rgba(255,255,255,0.08)",
+							color: allExpanded ? "white" : "var(--magrana-text, #F8FAFC)",
+							borderRadius: "6px",
+							border: "1px solid var(--magrana-glass-border, rgba(255,255,255,0.12))",
+							cursor: "pointer"
+						},
+						children: allExpanded ? "🗜️ Modo Compacto" : "📖 Expandir Todas"
+					})]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					style: {
 						position: "relative",
 						display: "inline-block",
 						padding: 0,
 						borderRadius: "16px",
-						overflow: "hidden",
+						overflow: "visible",
 						background: "var(--magrana-glass-bg, rgba(40,40,40,0.75))",
 						backdropFilter: "blur(16px)",
 						border: "1px solid var(--magrana-glass-border, rgba(255,255,255,0.08))",
@@ -3710,91 +3758,188 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 							const isFullyCorrect = requireDefs ? itemCorrect && defCorrect : itemCorrect;
 							const zx = zone.x_coord !== void 0 ? zone.x_coord : zone.x ?? 0;
 							const zy = zone.y_coord !== void 0 ? zone.y_coord : zone.y ?? 0;
+							const isHovered = hoveredZoneId === zoneId;
+							const isManuallyExpanded = expandedCards[zoneId];
+							const isExpanded = allExpanded || isHovered || isManuallyExpanded || showResults;
+							const curDefId = selectedDefs[zoneId];
+							const curDefObj = curDefId ? slide.definitions.find((d) => String(d.id) === String(curDefId)) : null;
+							const defLabel = curDefObj ? curDefObj.display_number ?? curDefObj.number : null;
 							return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								onMouseEnter: () => setHoveredZoneId(zoneId),
+								onMouseLeave: () => setHoveredZoneId(null),
+								onClick: () => !showResults && toggleCard(zoneId),
 								style: {
 									position: "absolute",
 									left: `${zx}%`,
 									top: `${zy}%`,
-									transform: "translate(-50%, calc(-100% - 25px))",
+									transform: isExpanded ? "translate(-50%, calc(-100% - 15px)) scale(1.03)" : "translate(-50%, calc(-100% - 12px)) scale(1)",
 									background: "var(--magrana-card, #141414)",
-									borderRadius: "8px",
-									border: `2px solid ${showResults ? isFullyCorrect ? "#10B981" : "#EF4444" : "var(--magrana-primary, #FB7185)"}`,
-									zIndex: 20,
+									borderRadius: isExpanded ? "12px" : "20px",
+									border: `2px solid ${showResults ? isFullyCorrect ? "#10B981" : "#EF4444" : isExpanded ? "var(--magrana-primary, #FB7185)" : "var(--magrana-glass-border, rgba(255,255,255,0.12))"}`,
+									zIndex: isExpanded ? 9999 : 25,
 									display: "flex",
 									flexDirection: "column",
-									gap: "0.5rem",
-									alignItems: "center",
-									padding: "0.5rem",
-									minWidth: "100px"
+									gap: isExpanded ? "0.6rem" : "0",
+									padding: isExpanded ? "0.75rem 0.9rem" : "0.35rem 0.75rem",
+									minWidth: isExpanded ? "200px" : "auto",
+									maxWidth: isExpanded ? "260px" : "150px",
+									boxShadow: isExpanded ? "0 14px 35px rgba(0,0,0,0.6), 0 0 12px rgba(251,113,133,0.3)" : "0 4px 12px rgba(0,0,0,0.35)",
+									backdropFilter: "blur(12px)",
+									cursor: "pointer",
+									transition: "transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease"
 								},
-								children: [
-									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-										style: {
-											fontWeight: "bold",
-											fontSize: "0.875rem",
-											color: showResults && !itemCorrect ? "#EF4444" : "var(--magrana-text, #F8FAFC)"
-										},
-										children: item.item_name
-									}),
-									requireDefs && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								title: isExpanded ? "" : "Haz clic o pasa el ratón para desplegar",
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									style: {
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "space-between",
+										gap: "0.4rem",
+										width: "100%"
+									},
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											style: {
+												fontWeight: "bold",
+												fontSize: isExpanded ? "0.9rem" : "0.8rem",
+												color: showResults && !itemCorrect ? "#EF4444" : "var(--magrana-text, #F8FAFC)",
+												whiteSpace: isExpanded ? "normal" : "nowrap",
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+												flex: 1
+											},
+											children: item.item_name
+										}),
+										!isExpanded && requireDefs && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											style: {
+												background: defLabel ? "var(--magrana-primary, #FB7185)" : "rgba(239, 68, 68, 0.25)",
+												color: defLabel ? "white" : "#f87171",
+												borderRadius: "10px",
+												padding: "1px 6px",
+												fontSize: "0.7rem",
+												fontWeight: "bold",
+												flexShrink: 0
+											},
+											children: defLabel ? `Def. ${defLabel}` : "⚠️ Sin def"
+										}),
+										!showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											style: {
+												fontSize: "0.75rem",
+												opacity: .6,
+												flexShrink: 0
+											},
+											children: isExpanded ? "▲" : "▼"
+										}),
+										showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											style: {
+												fontSize: "0.85rem",
+												flexShrink: 0
+											},
+											children: isFullyCorrect ? "✅" : "❌"
+										})
+									]
+								}), isExpanded && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									onClick: (e) => e.stopPropagation(),
+									style: {
+										display: "flex",
+										flexDirection: "column",
+										gap: "0.6rem",
+										marginTop: "0.2rem"
+									},
+									children: [requireDefs && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 										style: {
 											display: "flex",
-											alignItems: "center",
-											gap: "0.5rem",
+											flexDirection: "column",
+											gap: "0.25rem",
 											width: "100%"
 										},
-										children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("select", {
-											value: selectedDefs[zoneId] || "",
-											onChange: (e) => !showResults && setSelectedDefs({
-												...selectedDefs,
-												[zoneId]: e.target.value
-											}),
-											disabled: showResults,
+										children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
 											style: {
-												flex: 1,
-												padding: "0.25rem",
-												background: "var(--magrana-surface, #0A0A0A)",
-												color: "var(--magrana-text, #F8FAFC)",
-												border: "1px solid var(--magrana-glass-border, rgba(255,255,255,0.08))",
-												borderRadius: "4px",
-												fontSize: "0.8rem"
+												fontSize: "0.75rem",
+												color: "var(--magrana-text-muted, #A1A1AA)",
+												fontWeight: 600
 											},
-											children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
-												value: "",
-												disabled: true,
-												children: "Definición..."
-											}), slide.definitions.map((def) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
-												value: String(def.id),
-												children: def.display_number ?? def.number
-											}, def.id))]
-										}), showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: defCorrect ? "✅" : "❌" })]
-									}),
-									!showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
-										onClick: () => {
+											children: "Definición correspondiente:"
+										}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+											style: {
+												display: "flex",
+												alignItems: "center",
+												gap: "0.4rem",
+												width: "100%"
+											},
+											children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("select", {
+												value: selectedDefs[zoneId] || "",
+												onChange: (e) => !showResults && setSelectedDefs({
+													...selectedDefs,
+													[zoneId]: e.target.value
+												}),
+												disabled: showResults,
+												style: {
+													flex: 1,
+													padding: "0.4rem",
+													background: "var(--magrana-surface, #0A0A0A)",
+													color: "var(--magrana-text, #F8FAFC)",
+													border: "1px solid var(--magrana-glass-border, rgba(255,255,255,0.12))",
+													borderRadius: "6px",
+													fontSize: "0.8rem",
+													outline: "none",
+													cursor: "pointer"
+												},
+												children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
+													value: "",
+													disabled: true,
+													children: "Selecciona definición..."
+												}), slide.definitions.map((def) => {
+													const num = def.display_number ?? def.number;
+													const preview = def.text.length > 25 ? `${def.text.slice(0, 25)}...` : def.text;
+													return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("option", {
+														value: String(def.id),
+														children: [
+															"#",
+															num,
+															": ",
+															preview
+														]
+													}, def.id);
+												})]
+											}), showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: defCorrect ? "✅" : "❌" })]
+										})]
+									}), !showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+										onClick: (e) => {
+											e.stopPropagation();
 											const np = { ...placements };
 											delete np[zoneId];
 											setPlacements(np);
 											const nd = { ...selectedDefs };
 											delete nd[zoneId];
 											setSelectedDefs(nd);
+											const ne = { ...expandedCards };
+											delete ne[zoneId];
+											setExpandedCards(ne);
 										},
 										style: {
 											width: "100%",
-											padding: "0.2rem",
-											background: "rgba(239, 68, 68, 0.2)",
+											padding: "0.35rem 0.5rem",
+											background: "rgba(239, 68, 68, 0.15)",
 											color: "#ef4444",
-											border: "none",
-											borderRadius: "4px",
+											border: "1px solid rgba(239, 68, 68, 0.3)",
+											borderRadius: "6px",
 											cursor: "pointer",
-											fontSize: "0.75rem"
+											fontSize: "0.78rem",
+											fontWeight: "bold",
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											gap: "0.3rem",
+											marginTop: "0.2rem"
 										},
-										children: "Quitar"
-									})
-								]
+										children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: "🗑️" }), " Quitar de la zona"]
+									})]
+								})]
 							}, `placed-${zoneId}`);
 						})
 					]
-				})
+				})]
 			}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				style: {
 					display: "flex",
