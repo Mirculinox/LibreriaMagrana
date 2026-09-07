@@ -170,7 +170,7 @@ export declare interface DragDropSlide {
  * @example
  * <DraggableItem id="item-1" name="Bisturí" />
  */
-export declare function DraggableItem({ id, name, disabled }: DraggableItemProps): JSX.Element;
+export declare function DraggableItem({ id, name, disabled, isSelected, onSelect }: DraggableItemProps): JSX.Element;
 
 declare interface DraggableItemProps {
     /** ID único del ítem (debe coincidir con el ID de su zona correcta) */
@@ -179,6 +179,10 @@ declare interface DraggableItemProps {
     name: string;
     /** Si está deshabilitado (no se puede arrastrar) */
     disabled?: boolean;
+    /** Si está seleccionado mediante toque/clic */
+    isSelected?: boolean;
+    /** Callback al hacer clic/tocar el elemento */
+    onSelect?: (id: string) => void;
 }
 
 /**
@@ -195,7 +199,7 @@ declare interface DraggableItemProps {
  *   </div>
  * </DndContext>
  */
-export declare function DroppableZone({ id, x, y, isOccupied, showResults, isCorrect }: DroppableZoneProps): JSX.Element;
+export declare function DroppableZone({ id, x, y, isOccupied, showResults, isCorrect, onClick, isTarget }: DroppableZoneProps): JSX.Element;
 
 declare interface DroppableZoneProps {
     /** ID único de la zona (coincide con el ID del item correcto) */
@@ -210,6 +214,10 @@ declare interface DroppableZoneProps {
     showResults?: boolean;
     /** Si el elemento colocado es correcto (sólo relevante cuando showResults=true) */
     isCorrect?: boolean;
+    /** Callback al pulsar/tocar la zona */
+    onClick?: (id: string) => void;
+    /** Si la zona es un objetivo potencial al haber un elemento seleccionado */
+    isTarget?: boolean;
 }
 
 export declare interface DropZone {

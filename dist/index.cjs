@@ -1301,6 +1301,16 @@ var Action;
 	Action["UnregisterDroppable"] = "unregisterDroppable";
 })(Action || (Action = {}));
 function noop() {}
+function useSensor(sensor, options) {
+	return (0, react.useMemo)(() => ({
+		sensor,
+		options: options != null ? options : {}
+	}), [sensor, options]);
+}
+function useSensors() {
+	for (var _len = arguments.length, sensors = new Array(_len), _key = 0; _key < _len; _key++) sensors[_key] = arguments[_key];
+	return (0, react.useMemo)(() => [...sensors].filter((sensor) => sensor != null), [...sensors]);
+}
 var defaultCoordinates = /*#__PURE__*/ Object.freeze({
 	x: 0,
 	y: 0
@@ -3464,23 +3474,26 @@ function useDroppable(_ref) {
 *   </div>
 * </DndContext>
 */
-function DroppableZone({ id, x, y, isOccupied = false, showResults = false, isCorrect = false }) {
+function DroppableZone({ id, x, y, isOccupied = false, showResults = false, isCorrect = false, onClick, isTarget = false }) {
 	const { isOver, setNodeRef } = useDroppable({
 		id,
 		disabled: showResults
 	});
-	let borderColor = isOver ? "#FCD34D" : "#F59E0B";
-	let bgColor = isOver ? "rgba(252, 211, 77, 0.75)" : isOccupied ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.65)";
-	let borderStyle = isOver ? "4px solid" : "3px dashed";
-	let scale = isOver ? "scale(1.4)" : "scale(1)";
-	let zIndex = isOver ? 500 : 10;
+	let borderColor = isOver ? "#FCD34D" : isTarget ? "#38BDF8" : "#F59E0B";
+	let bgColor = isOver ? "rgba(252, 211, 77, 0.75)" : isTarget ? "rgba(56, 189, 248, 0.4)" : isOccupied ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.65)";
+	let borderStyle = isOver || isTarget ? "4px solid" : "3px dashed";
+	let scale = isOver ? "scale(1.4)" : isTarget ? "scale(1.2)" : "scale(1)";
+	let zIndex = isOver ? 500 : isTarget ? 60 : 10;
 	if (showResults) {
 		borderColor = isCorrect ? "#10B981" : "#EF4444";
 		bgColor = isCorrect ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)";
 		borderStyle = "4px solid";
+		scale = "scale(1)";
+		zIndex = 10;
 	}
 	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 		ref: setNodeRef,
+		onClick: () => !showResults && onClick?.(id),
 		style: {
 			position: "absolute",
 			left: `${x}%`,
@@ -3495,17 +3508,18 @@ function DroppableZone({ id, x, y, isOccupied = false, showResults = false, isCo
 			alignItems: "center",
 			justifyContent: "center",
 			zIndex,
-			boxShadow: isOver ? "0 0 30px #FCD34D, 0 0 15px #F59E0B" : "0 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.5)",
+			boxShadow: isOver ? "0 0 30px #FCD34D, 0 0 15px #F59E0B" : isTarget ? "0 0 20px #38BDF8, 0 0 8px #0284C7" : "0 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.5)",
 			backdropFilter: "blur(4px)",
+			cursor: !showResults && (isTarget || !isOccupied) ? "pointer" : "default",
 			transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border 0.2s ease, box-shadow 0.2s ease"
 		},
 		children: [!isOccupied && !showResults && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 			style: {
 				fontSize: "1.4rem",
-				opacity: isOver ? 1 : .85,
+				opacity: isOver || isTarget ? 1 : .85,
 				filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.5))"
 			},
-			children: "🎯"
+			children: isTarget ? "📍" : "🎯"
 		}), isOccupied && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { style: {
 			width: "22px",
 			height: "22px",
@@ -3525,39 +3539,50 @@ function DroppableZone({ id, x, y, isOccupied = false, showResults = false, isCo
 * @example
 * <DraggableItem id="item-1" name="Bisturí" />
 */
-function DraggableItem({ id, name, disabled = false }) {
+function DraggableItem({ id, name, disabled = false, isSelected = false, onSelect }) {
 	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
 		id: String(id),
 		disabled
 	});
 	const style = transform ? {
-		transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(0.92)`,
+		transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(1.04)`,
 		zIndex: 9999,
 		position: "relative",
-		opacity: .75,
+		opacity: .85,
 		pointerEvents: "none",
 		boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
 	} : { position: "relative" };
-	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 		ref: setNodeRef,
+		onClick: () => {
+			if (disabled) return;
+			onSelect?.(String(id));
+		},
 		style: {
 			...style,
 			padding: "0.5rem 1rem",
 			borderRadius: "var(--magrana-radius-sm, 8px)",
-			background: disabled ? "rgba(255,255,255,0.05)" : "var(--magrana-glass-bg, rgba(40,40,40,0.75))",
-			border: `1px solid ${disabled ? "rgba(255,255,255,0.04)" : "var(--magrana-primary, #FB7185)"}`,
-			color: disabled ? "var(--magrana-text-muted, #A1A1AA)" : "var(--magrana-text, #F8FAFC)",
+			background: disabled ? "rgba(255,255,255,0.05)" : isSelected ? "var(--magrana-primary, #FB7185)" : "var(--magrana-glass-bg, rgba(40,40,40,0.75))",
+			border: `1.5px solid ${disabled ? "rgba(255,255,255,0.04)" : isSelected ? "#FCD34D" : "var(--magrana-primary, #FB7185)"}`,
+			color: disabled ? "var(--magrana-text-muted, #A1A1AA)" : isSelected ? "#FFFFFF" : "var(--magrana-text, #F8FAFC)",
 			fontWeight: 600,
 			fontSize: "0.875rem",
 			fontFamily: "var(--magrana-font, Inter, sans-serif)",
 			cursor: disabled ? "default" : isDragging ? "grabbing" : "grab",
 			userSelect: "none",
-			transition: "box-shadow 0.2s ease, opacity 0.2s ease",
-			backdropFilter: "blur(8px)"
+			WebkitUserSelect: "none",
+			touchAction: "none",
+			transition: "box-shadow 0.2s ease, opacity 0.2s ease, transform 0.15s ease, background 0.2s ease",
+			backdropFilter: "blur(8px)",
+			boxShadow: isSelected ? "0 0 16px rgba(251, 113, 133, 0.6), 0 4px 12px rgba(0,0,0,0.3)" : isDragging ? "0 14px 28px rgba(0,0,0,0.5)" : "0 4px 10px rgba(0,0,0,0.15)",
+			transform: isSelected && !transform ? "scale(1.04)" : style.transform,
+			display: "inline-flex",
+			alignItems: "center",
+			gap: "0.4rem"
 		},
 		...disabled ? {} : listeners,
 		...attributes,
-		children: name
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: isSelected ? "👉" : "⠿" }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: name })]
 	});
 }
 //#endregion
@@ -3620,6 +3645,11 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 	const [hoveredZoneId, setHoveredZoneId] = (0, react$1.useState)(null);
 	const [expandedCards, setExpandedCards] = (0, react$1.useState)({});
 	const [allExpanded, setAllExpanded] = (0, react$1.useState)(false);
+	const [selectedItemId, setSelectedItemId] = (0, react$1.useState)(null);
+	const sensors = useSensors(useSensor(MouseSensor, { activationConstraint: { distance: 5 } }), useSensor(TouchSensor, { activationConstraint: {
+		delay: 150,
+		tolerance: 5
+	} }), useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 	(0, react$1.useEffect)(() => {
 		setPlacements({});
 		setSelectedDefs({});
@@ -3627,6 +3657,7 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 		setHoveredZoneId(null);
 		setExpandedCards({});
 		setAllExpanded(false);
+		setSelectedItemId(null);
 	}, [slide]);
 	const handleDragEnd = (event) => {
 		if (showResults) return;
@@ -3640,6 +3671,25 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 				...prev,
 				[over.id]: true
 			}));
+			setSelectedItemId(null);
+		}
+	};
+	const handleSelectItem = (id) => {
+		if (showResults) return;
+		setSelectedItemId((prev) => prev === id ? null : id);
+	};
+	const handleZoneClick = (zoneId) => {
+		if (showResults) return;
+		if (selectedItemId && !placements[zoneId]) {
+			setPlacements((prev) => ({
+				...prev,
+				[zoneId]: selectedItemId
+			}));
+			setExpandedCards((prev) => ({
+				...prev,
+				[zoneId]: true
+			}));
+			setSelectedItemId(null);
 		}
 	};
 	const toggleCard = (zoneId, e) => {
@@ -3665,20 +3715,34 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 		}
 	});
 	const imageUrl = resolveImageUrl(slide.question.image_url, baseUrl);
-	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DndContext, {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(DndContext, {
+		sensors,
 		onDragEnd: handleDragEnd,
-		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-			style: {
-				display: "grid",
-				gridTemplateColumns: "1fr 360px",
-				gap: "2rem"
-			},
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("style", { children: `
+        .magrana-ui-dnd-grid {
+          display: grid;
+          grid-template-columns: 1fr 360px;
+          gap: 2rem;
+          align-items: start;
+          width: 100%;
+        }
+        @media (max-width: 900px) {
+          .magrana-ui-dnd-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+        }
+      ` }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "magrana-ui-dnd-grid",
 			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				style: {
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
-					gap: "0.75rem"
+					gap: "0.75rem",
+					width: "100%",
+					maxWidth: "100%"
 				},
 				children: [Object.keys(placements).length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					style: {
@@ -3694,7 +3758,7 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 					},
 					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 						style: { color: "var(--magrana-text-muted, #A1A1AA)" },
-						children: "💡 Pasa el ratón sobre cualquier tarjeta para verla en detalle"
+						children: "💡 Pasa el ratón o toca cualquier tarjeta para verla en detalle"
 					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 						onClick: () => setAllExpanded(!allExpanded),
 						style: {
@@ -3729,6 +3793,7 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 								maxHeight: "70vh",
 								maxWidth: "100%",
 								width: "auto",
+								height: "auto",
 								display: "block",
 								borderRadius: "16px"
 							},
@@ -3745,7 +3810,9 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 								y,
 								isOccupied,
 								showResults,
-								isCorrect
+								isCorrect,
+								onClick: handleZoneClick,
+								isTarget: !isOccupied && !showResults && !!selectedItemId
 							}, zone.id);
 						}),
 						Object.entries(placements).map(([zoneId, itemId]) => {
@@ -3944,7 +4011,8 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 				style: {
 					display: "flex",
 					flexDirection: "column",
-					gap: "1.5rem"
+					gap: "1.5rem",
+					width: "100%"
 				},
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
@@ -3955,32 +4023,56 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 							border: "1px solid var(--magrana-glass-border, rgba(255,255,255,0.08))",
 							borderRadius: "20px"
 						},
-						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h3", {
-							style: {
-								margin: 0,
-								marginBottom: "1rem",
-								color: "var(--magrana-text, #F8FAFC)",
-								fontSize: "1rem"
-							},
-							children: "Elementos a arrastrar"
-						}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-							style: {
-								display: "flex",
-								flexWrap: "wrap",
-								gap: "0.5rem"
-							},
-							children: [availableItems.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DraggableItem, {
-								id: String(item.id),
-								name: item.item_name,
-								disabled: showResults
-							}, item.id)), availableItems.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h3", {
 								style: {
-									color: "var(--magrana-text-muted, #A1A1AA)",
-									fontSize: "0.875rem"
+									margin: 0,
+									marginBottom: "0.85rem",
+									color: "var(--magrana-text, #F8FAFC)",
+									fontSize: "1rem"
 								},
-								children: "Todos los elementos están colocados."
-							})]
-						})]
+								children: "Elementos a colocar"
+							}),
+							!showResults && availableItems.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								style: {
+									fontSize: "0.82rem",
+									color: selectedItemId ? "var(--magrana-primary, #FB7185)" : "var(--magrana-text-muted, #A1A1AA)",
+									marginBottom: "0.85rem",
+									background: selectedItemId ? "rgba(251, 113, 133, 0.12)" : "rgba(255,255,255,0.03)",
+									border: `1px dashed ${selectedItemId ? "var(--magrana-primary, #FB7185)" : "var(--magrana-glass-border, rgba(255,255,255,0.1))"}`,
+									padding: "0.5rem 0.75rem",
+									borderRadius: "8px",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem",
+									transition: "all 0.2s ease"
+								},
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									style: { fontSize: "1.1rem" },
+									children: selectedItemId ? "📍" : "💡"
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: selectedItemId ? "Toca el círculo en la imagen donde quieras colocarlo" : "Arrastra el elemento a la imagen o tócalo para seleccionarlo" })]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								style: {
+									display: "flex",
+									flexWrap: "wrap",
+									gap: "0.5rem"
+								},
+								children: [availableItems.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DraggableItem, {
+									id: String(item.id),
+									name: item.item_name,
+									disabled: showResults,
+									isSelected: selectedItemId === String(item.id),
+									onSelect: handleSelectItem
+								}, item.id)), availableItems.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+									style: {
+										color: "var(--magrana-text-muted, #A1A1AA)",
+										fontSize: "0.875rem"
+									},
+									children: "Todos los elementos están colocados."
+								})]
+							})
+						]
 					}),
 					requireDefs && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						style: {
@@ -4088,7 +4180,7 @@ function DragDropActivity({ slide, onNext, baseUrl = "" }) {
 					})
 				]
 			})]
-		})
+		})]
 	});
 }
 //#endregion

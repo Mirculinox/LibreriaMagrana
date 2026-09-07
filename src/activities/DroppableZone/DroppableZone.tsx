@@ -13,6 +13,10 @@ interface DroppableZoneProps {
   showResults?: boolean;
   /** Si el elemento colocado es correcto (sólo relevante cuando showResults=true) */
   isCorrect?: boolean;
+  /** Callback al pulsar/tocar la zona */
+  onClick?: (id: string) => void;
+  /** Si la zona es un objetivo potencial al haber un elemento seleccionado */
+  isTarget?: boolean;
 }
 
 /**
@@ -29,24 +33,27 @@ interface DroppableZoneProps {
  *   </div>
  * </DndContext>
  */
-export function DroppableZone({ id, x, y, isOccupied = false, showResults = false, isCorrect = false }: DroppableZoneProps) {
+export function DroppableZone({ id, x, y, isOccupied = false, showResults = false, isCorrect = false, onClick, isTarget = false }: DroppableZoneProps) {
   const { isOver, setNodeRef } = useDroppable({ id, disabled: showResults });
 
-  let borderColor = isOver ? '#FCD34D' : '#F59E0B';
-  let bgColor     = isOver ? 'rgba(252, 211, 77, 0.75)' : (isOccupied ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.65)');
-  let borderStyle = isOver ? '4px solid' : '3px dashed';
-  let scale       = isOver ? 'scale(1.4)' : 'scale(1)';
-  let zIndex      = isOver ? 500 : 10;
+  let borderColor = isOver ? '#FCD34D' : (isTarget ? '#38BDF8' : '#F59E0B');
+  let bgColor     = isOver ? 'rgba(252, 211, 77, 0.75)' : (isTarget ? 'rgba(56, 189, 248, 0.4)' : (isOccupied ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.65)'));
+  let borderStyle = (isOver || isTarget) ? '4px solid' : '3px dashed';
+  let scale       = isOver ? 'scale(1.4)' : (isTarget ? 'scale(1.2)' : 'scale(1)');
+  let zIndex      = isOver ? 500 : (isTarget ? 60 : 10);
 
   if (showResults) {
     borderColor = isCorrect ? '#10B981' : '#EF4444';
     bgColor     = isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
     borderStyle = '4px solid';
+    scale       = 'scale(1)';
+    zIndex      = 10;
   }
 
   return (
     <div
       ref={setNodeRef}
+      onClick={() => !showResults && onClick?.(id)}
       style={{
         position: 'absolute',
         left: `${x}%`,
@@ -63,14 +70,15 @@ export function DroppableZone({ id, x, y, isOccupied = false, showResults = fals
         zIndex,
         boxShadow: isOver
           ? '0 0 30px #FCD34D, 0 0 15px #F59E0B'
-          : '0 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.5)',
+          : (isTarget ? '0 0 20px #38BDF8, 0 0 8px #0284C7' : '0 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.5)'),
         backdropFilter: 'blur(4px)',
+        cursor: (!showResults && (isTarget || !isOccupied)) ? 'pointer' : 'default',
         transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border 0.2s ease, box-shadow 0.2s ease',
       }}
     >
       {!isOccupied && !showResults && (
-        <span style={{ fontSize: '1.4rem', opacity: isOver ? 1 : 0.85, filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.5))' }}>
-          🎯
+        <span style={{ fontSize: '1.4rem', opacity: isOver || isTarget ? 1 : 0.85, filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.5))' }}>
+          {isTarget ? '📍' : '🎯'}
         </span>
       )}
       {isOccupied && (

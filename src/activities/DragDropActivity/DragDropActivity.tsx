@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import { 
+  DndContext, 
+  type DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
+  MouseSensor
+} from '@dnd-kit/core';
 import { DroppableZone } from '../DroppableZone/DroppableZone';
 import { DraggableItem } from '../DraggableItem/DraggableItem';
 import { resolveImageUrl } from '../utils';
@@ -79,6 +87,18 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
   const [hoveredZoneId, setHoveredZoneId] = useState<string | null>(null);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [allExpanded, setAllExpanded]   = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: { distance: 5 },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: { delay: 150, tolerance: 5 },
+  });
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: { distance: 5 },
+  });
+  const sensors = useSensors(mouseSensor, touchSensor, pointerSensor);
 
   // Resetear estado al cambiar de diapositiva
   useEffect(() => {
@@ -88,6 +108,7 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
     setHoveredZoneId(null);
     setExpandedCards({});
     setAllExpanded(false);
+    setSelectedItemId(null);
   }, [slide]);
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -96,6 +117,21 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
     if (over && !placements[over.id]) {
       setPlacements({ ...placements, [over.id]: String(active.id) });
       setExpandedCards(prev => ({ ...prev, [over.id]: true }));
+      setSelectedItemId(null);
+    }
+  };
+
+  const handleSelectItem = (id: string) => {
+    if (showResults) return;
+    setSelectedItemId(prev => (prev === id ? null : id));
+  };
+
+  const handleZoneClick = (zoneId: string) => {
+    if (showResults) return;
+    if (selectedItemId && !placements[zoneId]) {
+      setPlacements(prev => ({ ...prev, [zoneId]: selectedItemId }));
+      setExpandedCards(prev => ({ ...prev, [zoneId]: true }));
+      setSelectedItemId(null);
     }
   };
 
@@ -133,11 +169,27 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
   const imageUrl = resolveImageUrl(slide.question.image_url, baseUrl);
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '2rem' }}>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <style>{`
+        .magrana-ui-dnd-grid {
+          display: grid;
+          grid-template-columns: 1fr 360px;
+          gap: 2rem;
+          align-items: start;
+          width: 100%;
+        }
+        @media (max-width: 900px) {
+          .magrana-ui-dnd-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+        }
+      `}</style>
+      <div className="magrana-ui-dnd-grid">
 
         {/* Imagen con zonas encima */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', width: '100%', maxWidth: '100%' }}>
           {/* Barra superior de control */}
           {Object.keys(placements).length > 0 && (
             <div style={{
@@ -152,7 +204,7 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
               fontSize: '0.85rem'
             }}>
               <span style={{ color: 'var(--magrana-text-muted, #A1A1AA)' }}>
-                💡 Pasa el ratón sobre cualquier tarjeta para verla en detalle
+                💡 Pasa el ratón o toca cualquier tarjeta para verla en detalle
               </span>
               <button
                 onClick={() => setAllExpanded(!allExpanded)}
@@ -187,7 +239,7 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
               <img
                 src={imageUrl}
                 alt="Actividad"
-                style={{ maxHeight: '70vh', maxWidth: '100%', width: 'auto', display: 'block', borderRadius: '16px' }}
+                style={{ maxHeight: '70vh', maxWidth: '100%', width: 'auto', height: 'auto', display: 'block', borderRadius: '16px' }}
                 draggable={false}
               />
             )}
@@ -207,6 +259,8 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
                   isOccupied={isOccupied}
                   showResults={showResults}
                   isCorrect={isCorrect}
+                  onClick={handleZoneClick}
+                  isTarget={!isOccupied && !showResults && !!selectedItemId}
                 />
               );
             })}
@@ -391,7 +445,7 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
         </div>
 
         {/* Panel lateral: ítems + definiciones + botón */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
           {/* Ítems disponibles */}
           <div style={{
             padding: '1.5rem',
@@ -400,12 +454,44 @@ export function DragDropActivity({ slide, onNext, baseUrl = '' }: DragDropActivi
             border: '1px solid var(--magrana-glass-border, rgba(255,255,255,0.08))',
             borderRadius: '20px',
           }}>
-            <h3 style={{ margin: 0, marginBottom: '1rem', color: 'var(--magrana-text, #F8FAFC)', fontSize: '1rem' }}>
-              Elementos a arrastrar
+            <h3 style={{ margin: 0, marginBottom: '0.85rem', color: 'var(--magrana-text, #F8FAFC)', fontSize: '1rem' }}>
+              Elementos a colocar
             </h3>
+
+            {/* Banner de ayuda táctil / escritorio */}
+            {!showResults && availableItems.length > 0 && (
+              <div style={{
+                fontSize: '0.82rem',
+                color: selectedItemId ? 'var(--magrana-primary, #FB7185)' : 'var(--magrana-text-muted, #A1A1AA)',
+                marginBottom: '0.85rem',
+                background: selectedItemId ? 'rgba(251, 113, 133, 0.12)' : 'rgba(255,255,255,0.03)',
+                border: `1px dashed ${selectedItemId ? 'var(--magrana-primary, #FB7185)' : 'var(--magrana-glass-border, rgba(255,255,255,0.1))'}`,
+                padding: '0.5rem 0.75rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.2s ease'
+              }}>
+                <span style={{ fontSize: '1.1rem' }}>{selectedItemId ? '📍' : '💡'}</span>
+                <span>
+                  {selectedItemId 
+                    ? 'Toca el círculo en la imagen donde quieras colocarlo' 
+                    : 'Arrastra el elemento a la imagen o tócalo para seleccionarlo'}
+                </span>
+              </div>
+            )}
+
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {availableItems.map(item => (
-                <DraggableItem key={item.id} id={String(item.id)} name={item.item_name} disabled={showResults} />
+                <DraggableItem 
+                  key={item.id} 
+                  id={String(item.id)} 
+                  name={item.item_name} 
+                  disabled={showResults} 
+                  isSelected={selectedItemId === String(item.id)}
+                  onSelect={handleSelectItem}
+                />
               ))}
               {availableItems.length === 0 && (
                 <p style={{ color: 'var(--magrana-text-muted, #A1A1AA)', fontSize: '0.875rem' }}>
