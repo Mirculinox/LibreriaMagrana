@@ -29,7 +29,7 @@ export function DraggableItem({ id, name, disabled = false, isSelected = false, 
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(1.04)`,
         zIndex: 9999,
         position: 'relative',
-        opacity: 0.85,
+        opacity: 0.4,
         pointerEvents: 'none',
         boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
       }

@@ -3522,7 +3522,7 @@ function DraggableItem({ id, name, disabled = false, isSelected = false, onSelec
 		transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(1.04)`,
 		zIndex: 9999,
 		position: "relative",
-		opacity: .85,
+		opacity: .4,
 		pointerEvents: "none",
 		boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
 	} : { position: "relative" };
@@ -6062,7 +6062,7 @@ function HeatmapActivity({ slide, onNext, baseUrl = "" }) {
 							draggable: false
 						})
 					})
-				}) : /* @__PURE__ */ jsxs("div", {
+				}) : /* @__PURE__ */ jsx("div", {
 					style: {
 						position: "relative",
 						width: "100%",
@@ -6071,49 +6071,57 @@ function HeatmapActivity({ slide, onNext, baseUrl = "" }) {
 						alignItems: "center",
 						justifyContent: "center"
 					},
-					children: [
-						imageUrl && /* @__PURE__ */ jsx("img", {
-							ref: imageRef,
-							src: imageUrl,
-							alt: "Mapa de calor — modo pin",
-							onClick: handleImageClick,
-							style: {
-								maxHeight: "100%",
-								maxWidth: "100%",
-								objectFit: "contain",
-								cursor: showResults ? "default" : "crosshair"
-							},
-							draggable: false
-						}),
-						pin && /* @__PURE__ */ jsx("div", { style: {
-							position: "absolute",
-							left: `${pin.x}%`,
-							top: `${pin.y}%`,
-							transform: "translate(-50%, -50%)",
-							width: "20px",
-							height: "20px",
-							background: showResults ? isCorrect ? "#10B981" : "#EF4444" : "rgba(255,255,255,0.8)",
-							borderRadius: "50%",
-							border: "3px solid white",
-							boxShadow: "0 0 0 2px rgba(0,0,0,0.5)",
-							pointerEvents: "none",
-							transition: "background 0.3s ease"
-						} }),
-						showResults && slide.question.correct_x !== null && slide.question.correct_y !== null && /* @__PURE__ */ jsx("div", { style: {
-							position: "absolute",
-							left: `${slide.question.correct_x}%`,
-							top: `${slide.question.correct_y}%`,
-							transform: "translate(-50%, -50%)",
-							width: `${targetRadius * 2}%`,
-							height: `${targetRadius * 2}%`,
-							aspectRatio: "1 / 1",
-							borderRadius: "50%",
-							border: "3px dashed #10B981",
-							backgroundColor: "rgba(16, 185, 129, 0.25)",
-							boxShadow: "0 0 15px rgba(16, 185, 129, 0.4)",
-							pointerEvents: "none"
-						} })
-					]
+					children: /* @__PURE__ */ jsxs("div", {
+						style: {
+							position: "relative",
+							display: "inline-block",
+							maxWidth: "100%",
+							maxHeight: "100%"
+						},
+						children: [
+							imageUrl && /* @__PURE__ */ jsx("img", {
+								ref: imageRef,
+								src: imageUrl,
+								alt: "Mapa de calor — modo pin",
+								onClick: handleImageClick,
+								style: {
+									maxHeight: "58vh",
+									maxWidth: "100%",
+									display: "block",
+									cursor: showResults ? "default" : "crosshair"
+								},
+								draggable: false
+							}),
+							pin && /* @__PURE__ */ jsx("div", { style: {
+								position: "absolute",
+								left: `${pin.x}%`,
+								top: `${pin.y}%`,
+								transform: "translate(-50%, -50%)",
+								width: "20px",
+								height: "20px",
+								background: showResults ? isCorrect ? "#10B981" : "#EF4444" : "rgba(255,255,255,0.8)",
+								borderRadius: "50%",
+								border: "3px solid white",
+								boxShadow: "0 0 0 2px rgba(0,0,0,0.5)",
+								pointerEvents: "none",
+								transition: "background 0.3s ease"
+							} }),
+							showResults && slide.question.correct_x !== null && slide.question.correct_y !== null && /* @__PURE__ */ jsx("div", { style: {
+								position: "absolute",
+								left: `${slide.question.correct_x}%`,
+								top: `${slide.question.correct_y}%`,
+								transform: "translate(-50%, -50%)",
+								width: `${targetRadius * 2}%`,
+								height: "auto",
+								aspectRatio: "1 / 1",
+								borderRadius: "50%",
+								border: "3px dashed #10B981",
+								backgroundColor: "rgba(16, 185, 129, 0.25)",
+								boxShadow: "0 0 15px rgba(16, 185, 129, 0.4)",
+								pointerEvents: "none"
+							} })
+						]
+					})
 				})
 			})]
 		}), !showResults ? /* @__PURE__ */ jsx("button", {

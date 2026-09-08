@@ -139,59 +139,61 @@ export function HeatmapActivity({ slide, onNext, baseUrl = '' }: HeatmapActivity
             </TransformWrapper>
           ) : (
             <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {imageUrl && (
-                <img
-                  ref={imageRef}
-                  src={imageUrl}
-                  alt="Mapa de calor — modo pin"
-                  onClick={handleImageClick}
-                  style={{
-                    maxHeight: '100%',
-                    maxWidth: '100%',
-                    objectFit: 'contain',
-                    cursor: showResults ? 'default' : 'crosshair',
-                  }}
-                  draggable={false}
-                />
-              )}
+              <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
+                {imageUrl && (
+                  <img
+                    ref={imageRef}
+                    src={imageUrl}
+                    alt="Mapa de calor — modo pin"
+                    onClick={handleImageClick}
+                    style={{
+                      maxHeight: '58vh',
+                      maxWidth: '100%',
+                      display: 'block',
+                      cursor: showResults ? 'default' : 'crosshair',
+                    }}
+                    draggable={false}
+                  />
+                )}
 
-              {/* Pin del alumno */}
-              {pin && (
-                <div style={{
-                  position: 'absolute',
-                  left: `${pin.x}%`,
-                  top: `${pin.y}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: '20px',
-                  height: '20px',
-                  background: showResults
-                    ? (isCorrect ? '#10B981' : '#EF4444')
-                    : 'rgba(255,255,255,0.8)',
-                  borderRadius: '50%',
-                  border: '3px solid white',
-                  boxShadow: '0 0 0 2px rgba(0,0,0,0.5)',
-                  pointerEvents: 'none',
-                  transition: 'background 0.3s ease',
-                }} />
-              )}
+                {/* Pin del alumno */}
+                {pin && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `${pin.x}%`,
+                    top: `${pin.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: '20px',
+                    height: '20px',
+                    background: showResults
+                      ? (isCorrect ? '#10B981' : '#EF4444')
+                      : 'rgba(255,255,255,0.8)',
+                    borderRadius: '50%',
+                    border: '3px solid white',
+                    boxShadow: '0 0 0 2px rgba(0,0,0,0.5)',
+                    pointerEvents: 'none',
+                    transition: 'background 0.3s ease',
+                  }} />
+                )}
 
-              {/* Zona correcta (solo en resultados) */}
-              {showResults && slide.question.correct_x !== null && slide.question.correct_y !== null && (
-                <div style={{
-                  position: 'absolute',
-                  left: `${slide.question.correct_x}%`,
-                  top: `${slide.question.correct_y}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: `${targetRadius * 2}%`,
-                  height: `${targetRadius * 2}%`,
-                  aspectRatio: '1 / 1',
-                  borderRadius: '50%',
-                  border: '3px dashed #10B981',
-                  backgroundColor: 'rgba(16, 185, 129, 0.25)',
-                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)',
-                  pointerEvents: 'none',
-                }} />
-              )}
+                {/* Zona correcta (solo en resultados) */}
+                {showResults && slide.question.correct_x !== null && slide.question.correct_y !== null && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `${slide.question.correct_x}%`,
+                    top: `${slide.question.correct_y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: `${targetRadius * 2}%`,
+                    height: 'auto',
+                    aspectRatio: '1 / 1',
+                    borderRadius: '50%',
+                    border: '3px dashed #10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.25)',
+                    boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)',
+                    pointerEvents: 'none',
+                  }} />
+                )}
+              </div>
             </div>
           )}
         </div>
